@@ -79,5 +79,37 @@ var change = function () {
 
 setInterval(change, 1000);
 
+var playerMovement = d3.behavior.drag()
+  .on("drag", function(d) {
+    player.attr('cx', function(d) {
+      return d3.event.x;
+    })
+    .attr('cy', function(d) {
+      return d3.event.y;
+    })
+  });
 
+player.call(playerMovement);
+// asteroids.transition().duration(500).style({
+  //   top: 50px;
+  //   left: 70px;
+  // });
+
+
+// selectAll asteroid
+//.data()
+//.enter().append('circle').attr('class', 'asteroid')
+//.style({ top: random X value,
+//         left: random Y value});
+
+
+// var updateScore = function() {
+//   d3.select('.current span').text(gameStats.currentScore);
+//   d3.select('highscore span').text(Math.max(gameStats.currentScore, highScore));
+//   d3.select('.collisions span')text(gameStats.collisions)
+// };
+
+// d3.select('.mouse').on('mousemove', function() {
+//   //move player's dot
+// });Then
 
