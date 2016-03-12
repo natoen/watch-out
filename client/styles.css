@@ -3,34 +3,25 @@ body {
 }
 
 .asteroid {
-  background-image: url('asteroid.png');
-  position: absolute;
-  background-size: 100% 100%;
   transform-origin: 50% 50%;
   animation: rotation 1000ms infinite linear;
 }
 
 
 .scoreboard {
-  position: absolute;
-  width: 130px;
+  margin: 10px auto 10px auto;
+  padding: 5px 5px 5px 5px;
+  width: 150px;
   height: 60px;
-  top: 15px;
-  right: 15px;
+  /*top: 15px;*/
+  /*right: 15px;*/
   border: 1px solid black;
-}
-
-
-.mouse {
-  position: absolute;
-
 }
 
 
 .board {
   background-image: url('galaxy.jpg');
-  margin-right: auto;
-  margin-left: auto;
+  margin: 0px auto 0px auto;
   width: 800px;
   height: 600px;
   border: 1px solid black;
