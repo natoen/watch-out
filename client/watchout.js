@@ -11,9 +11,11 @@ var gameStats = {
   collisions: 0
 }
 
-var addPixel = function(number) {
-  return number + 'px';
-}
+var playerData = [{
+  x: 1,
+  y: 1,
+  r: 10
+}];
 
 var board = d3.select('.board').append('svg')
   .attr('width', gameOptions.width)
@@ -26,12 +28,6 @@ var randomX = function() {
 var randomY = function() {
   return Math.random() * gameOptions.height;
 };
-
-var playerData = [{
-  x: 1,
-  y: 1,
-  r: 10
-}];
 
 var player = board.selectAll('circle')
   .data(playerData)
@@ -77,8 +73,6 @@ var change = function () {
   .duration(2000);
 };
 
-setInterval(change, 2000);
-
 var playerMovement = d3.behavior.drag()
   .on("drag", function(d) {
     player.attr('cx', function(d) {
@@ -97,13 +91,6 @@ var runScoreBoard = function() {
   d3.select('.collisions span').html(gameStats.collisions);
 }
 
-d3.timer(function() {
-  runScoreBoard();
-  collision();
-});
-
-player.call(playerMovement);
-
 var collision = function () {
   board.selectAll('image').each(function(asteroid) {
     var radiusSum = (d3.select(this).attr('height') / 2) + parseInt(player.attr('r'));
@@ -115,36 +102,14 @@ var collision = function () {
       gameStats.collisions++
       gameStats.currentScore = 0;
     }
-  })
-}
+  });
+};
 
-// use d3 to select all asteroids 
-// for each asteroid check to see if they collide
-// if collide, reset score and collision count++
-// keep doing this function every 500 ms
+player.call(playerMovement);
 
-// radius asteroid + radius player < distance 
+setInterval(change, 2000);
 
-// asteroids.transition().duration(500).style({
-  //   top: 50px;
-  //   left: 70px;
-  // });
-
-
-// selectAll asteroid
-//.data()
-//.enter().append('circle').attr('class', 'asteroid')
-//.style({ top: random X value,
-//         left: random Y value});
-
-
-// var updateScore = function() {
-//   d3.select('.current span').text(gameStats.currentScore);
-//   d3.select('highscore span').text(Math.max(gameStats.currentScore, highScore));
-//   d3.select('.collisions span')text(gameStats.collisions)
-// };
-
-// d3.select('.mouse').on('mousemove', function() {
-//   //move player's dot
-// });Then
-
+d3.timer(function() {
+  runScoreBoard();
+  collision();
+});
