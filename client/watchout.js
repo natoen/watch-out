@@ -1,6 +1,6 @@
 var gameOptions = {
-  height: 450,
-  width: 700,
+  height: 600,
+  width: 800,
   nEnemies: 30,
   padding: 20
 };
@@ -28,8 +28,8 @@ var randomY = function() {
 };
 
 var playerData = [{
-  x: 100,
-  y: 100,
+  x: 1,
+  y: 1,
   r: 10
 }];
 
@@ -38,8 +38,8 @@ var player = board.selectAll('circle')
   .enter()
   .append('circle')
   .attr('class', 'player')
-  .attr('cx', 100)
-  .attr('cy', 100)
+  .attr('cx', function(d) { return d.x; })
+  .attr('cy', function(d) { return d.y; })
   .attr('r', 10)
   .style('fill', 'gold');
 
@@ -74,10 +74,10 @@ var change = function () {
   asteroids.transition()
   .attr('x', function(d) { return randomX(); })
   .attr('y', function(d) { return randomY(); })
-  .duration(1000);
+  .duration(2000);
 };
 
-setInterval(change, 1000);
+setInterval(change, 2000);
 
 var playerMovement = d3.behavior.drag()
   .on("drag", function(d) {
@@ -89,7 +89,42 @@ var playerMovement = d3.behavior.drag()
     })
   });
 
+var runScoreBoard = function() {
+  gameStats.currentScore++;
+  gameStats.highScore = Math.max(gameStats.highScore, gameStats.currentScore);
+  d3.select('.highScore span').html(gameStats.highScore);
+  d3.select('.current span').html(gameStats.currentScore);
+  d3.select('.collisions span').html(gameStats.collisions);
+}
+
+d3.timer(function() {
+  runScoreBoard();
+  collision();
+});
+
 player.call(playerMovement);
+
+var collision = function () {
+  board.selectAll('image').each(function(asteroid) {
+    var radiusSum = (d3.select(this).attr('height') / 2) + parseInt(player.attr('r'));
+    var x = d3.select(this).attr('x') - player.attr('cx');
+    var y = d3.select(this).attr('y') - player.attr('cy');
+    var distance = Math.sqrt(Math.pow(x ,2) + Math.pow(y ,2));
+
+    if (radiusSum > distance) {
+      gameStats.collisions++
+      gameStats.currentScore = 0;
+    }
+  })
+}
+
+// use d3 to select all asteroids 
+// for each asteroid check to see if they collide
+// if collide, reset score and collision count++
+// keep doing this function every 500 ms
+
+// radius asteroid + radius player < distance 
+
 // asteroids.transition().duration(500).style({
   //   top: 50px;
   //   left: 70px;
