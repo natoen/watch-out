@@ -44,4 +44,40 @@ var player = board.selectAll('circle')
   .style('fill', 'gold');
 
 
+var generateEnemies = function(n) {
+  var storage = [];
+  for (var i = 0; i < n; i++) {
+    storage.push({x: randomX(),
+                  y: randomY(),
+                  r: 10,
+                  name: i});
+  }
+  return storage;
+}
+
+var enemies = generateEnemies(gameOptions.nEnemies);
+
+
+var asteroids = board.selectAll('image')
+                     .data(enemies)
+                     .enter()
+                     .append('image')
+                     .attr('xlink:href', 'asteroid.png')
+                     .attr('x', function(d) { return d.x; })
+                     .attr('y', function(d) { return d.y; })
+                     .attr('class', 'asteroid')
+                     .attr('height', 20)
+                     .attr('width', 20);
+
+
+var change = function () {   
+  asteroids.transition()
+  .attr('x', function(d) { return randomX(); })
+  .attr('y', function(d) { return randomY(); })
+  .duration(1000);
+};
+
+setInterval(change, 1000);
+
+
 
