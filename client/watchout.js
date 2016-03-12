@@ -14,7 +14,8 @@ var gameStats = {
 var playerData = [{
   x: 1,
   y: 1,
-  r: 10
+  height: 20,
+  width: 20
 }];
 
 var board = d3.select('.board').append('svg')
@@ -29,24 +30,22 @@ var randomY = function() {
   return Math.random() * gameOptions.height;
 };
 
-var player = board.selectAll('circle')
+var player = board.selectAll('image')
   .data(playerData)
   .enter()
-  .append('circle')
+  .append('image')
   .attr('class', 'player')
-  .attr('cx', function(d) { return d.x; })
-  .attr('cy', function(d) { return d.y; })
-  .attr('r', 10)
-  .style('fill', 'gold');
+  .attr('x', function(d) { return d.x; })
+  .attr('y', function(d) { return d.y; })
+  .attr('height', function(d) { return d.height; })
+  .attr('width', function(d) { return d.width; })
+  .attr('xlink:href', 'player.png');
 
 
 var generateEnemies = function(n) {
   var storage = [];
   for (var i = 0; i < n; i++) {
-    storage.push({x: randomX(),
-                  y: randomY(),
-                  r: 10,
-                  name: i});
+    storage.push({x: randomX(), y: randomY(), name: i});
   }
   return storage;
 }
@@ -75,10 +74,10 @@ var change = function () {
 
 var playerMovement = d3.behavior.drag()
   .on("drag", function(d) {
-    player.attr('cx', function(d) {
+    player.attr('x', function(d) {
       return d3.event.x;
     })
-    .attr('cy', function(d) {
+    .attr('y', function(d) {
       return d3.event.y;
     })
   });
@@ -92,10 +91,10 @@ var runScoreBoard = function() {
 }
 
 var collision = function () {
-  board.selectAll('image').each(function(asteroid) {
-    var radiusSum = (d3.select(this).attr('height') / 2) + parseInt(player.attr('r'));
-    var x = d3.select(this).attr('x') - player.attr('cx');
-    var y = d3.select(this).attr('y') - player.attr('cy');
+  board.selectAll('.asteroid').each(function(asteroid) {
+    var radiusSum = (d3.select(this).attr('height') / 2) + (parseInt(player.attr('height') / 2));
+    var x = d3.select(this).attr('x') - player.attr('x');
+    var y = d3.select(this).attr('y') - player.attr('y');
     var distance = Math.sqrt(Math.pow(x ,2) + Math.pow(y ,2));
 
     if (radiusSum > distance) {
@@ -105,11 +104,24 @@ var collision = function () {
   });
 };
 
+var throttle = function(func, wait) {
+  var cooldown = (new Date()).getTime();
+
+  return function () {
+    if (cooldown < (new Date()).getTime()) {
+      func();
+      cooldown = (new Date().getTime()) + wait;
+    }
+  };
+};
+
+var timedCollision = throttle(collision, 1000);
+
 player.call(playerMovement);
 
 setInterval(change, 2000);
 
 d3.timer(function() {
   runScoreBoard();
-  collision();
+  timedCollision();
 });
