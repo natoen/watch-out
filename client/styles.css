@@ -2,4 +2,32 @@
 
 /* Note: an asteroid image is included in this repo.
 Feel free to use it if you like. */
+body {
+  position: relative;
+}
+.asteroid {
+  background-image: url('asteroid.png');
+  position: absolute;
+  background-size: 100% 100%;
+}
 
+
+.scoreboard {
+  position: absolute;
+  width: 130px;
+  height: 60px;
+  top: 15px;
+  right: 15px;
+  border: 1px solid black;
+}
+
+.mouse {
+  position: absolute;
+
+}
+
+
+.board {
+  position: absolute;
+
+}
