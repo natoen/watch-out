@@ -53,19 +53,22 @@ var generateEnemies = function(n) {
 var enemies = generateEnemies(gameOptions.nEnemies);
 
 
-var asteroids = board.selectAll('image')
-                     .data(enemies)
-                     .enter()
-                     .append('image')
-                     .attr('xlink:href', 'asteroid.png')
-                     .attr('x', function(d) { return d.x; })
-                     .attr('y', function(d) { return d.y; })
-                     .attr('class', 'asteroid')
-                     .attr('height', 20)
-                     .attr('width', 20);
+var asteroids = board
+  .selectAll('image')
+  .data(enemies)
+  .enter()
+  .append('image')
+  .attr({
+    class: 'asteroid',
+    height: 20,
+    width: 20,
+    x: d => d.x,
+    y: d => d.y,
+    'xlink:href': 'asteroid.png'
+  });
 
 
-var change = function () {   
+var change = function () { 
   asteroids.transition()
   .attr('x', function(d) { return randomX(); })
   .attr('y', function(d) { return randomY(); })
@@ -73,11 +76,11 @@ var change = function () {
 };
 
 var playerMovement = d3.behavior.drag()
-  .on("drag", function(d) {
-    player.attr('x', function(d) {
+  .on("drag", function() {
+    player.attr('x', function() {
       return d3.event.x;
     })
-    .attr('y', function(d) {
+    .attr('y', function() {
       return d3.event.y;
     })
   });
@@ -115,7 +118,7 @@ var throttle = function(func, wait) {
   };
 };
 
-var timedCollision = throttle(collision, 1000);
+var timedCollision = throttle(collision, 350);
 
 player.call(playerMovement);
 
