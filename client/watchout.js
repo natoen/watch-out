@@ -1,60 +1,66 @@
-var gameOptions = {
+const gameOptions = {
   height: 600,
   width: 800,
   nEnemies: 30,
   padding: 20
 };
 
-var gameStats = {
+const gameStats = {
   currentScore: 0,
   highScore: 0,
   collisions: 0
-}
+};
 
-var playerData = [{
-  x: 1,
-  y: 1,
+const playerData = [{
+  x: 400,
+  y: 300,
   height: 20,
   width: 20
 }];
 
-var board = d3.select('.board').append('svg')
-  .attr('width', gameOptions.width)
-  .attr('height', gameOptions.height);
 
-var randomX = function() {
-  return Math.random() * gameOptions.width;
-};
 
-var randomY = function() {
-  return Math.random() * gameOptions.height;
-};
+const board = d3.select('.board')
+  .append('svg')
+  .attr({
+    width: gameOptions.width,
+    height: gameOptions.height
+  });
 
-var player = board.selectAll('image')
+const player = board.selectAll('image')
   .data(playerData)
   .enter()
   .append('image')
-  .attr('class', 'player')
-  .attr('x', function(d) { return d.x; })
-  .attr('y', function(d) { return d.y; })
-  .attr('height', function(d) { return d.height; })
-  .attr('width', function(d) { return d.width; })
-  .attr('xlink:href', 'player.png');
+  .attr({
+    class: 'player',
+    x: d => d.x,
+    y: d => d.y,
+    height: d => d.height,
+    width: d => d.width,
+    'xlink:href': 'player.png'
+  });
 
+const playerMovement = d3.behavior.drag()
+  .on('drag', () => { 
+    player.attr({
+      x: () => d3.event.x,
+      y: () => d3.event.y
+    });
+  });
 
-var generateEnemies = function(n) {
-  var storage = [];
-  for (var i = 0; i < n; i++) {
-    storage.push({x: randomX(), y: randomY(), name: i});
-  }
-  return storage;
+player.call(playerMovement);
+
+const randomX = () => Math.random() * gameOptions.width;
+
+const randomY = () => Math.random() * gameOptions.height;
+
+const enemies = [];
+
+for (let i = 0; i < gameOptions.nEnemies; i++) {
+  enemies.push({x: randomX(), y: randomY(), name: i});
 }
 
-var enemies = generateEnemies(gameOptions.nEnemies);
-
-
-var asteroids = board
-  .selectAll('image')
+const asteroids = board.selectAll('image')
   .data(enemies)
   .enter()
   .append('image')
@@ -68,63 +74,60 @@ var asteroids = board
   });
 
 
-var change = function () { 
-  asteroids.transition()
-  .attr('x', function(d) { return randomX(); })
-  .attr('y', function(d) { return randomY(); })
-  .duration(2000);
+
+const change = () => { 
+  asteroids
+    .transition()
+    .attr({
+      x: d => randomX(),
+      y: d => randomY()
+    })
+    .duration(2000);
 };
 
-var playerMovement = d3.behavior.drag()
-  .on("drag", function() {
-    player.attr('x', function() {
-      return d3.event.x;
-    })
-    .attr('y', function() {
-      return d3.event.y;
-    })
-  });
-
-var runScoreBoard = function() {
+const runScoreBoard = () => {
   gameStats.currentScore++;
   gameStats.highScore = Math.max(gameStats.highScore, gameStats.currentScore);
   d3.select('.highScore span').html(gameStats.highScore);
   d3.select('.current span').html(gameStats.currentScore);
   d3.select('.collisions span').html(gameStats.collisions);
-}
+};
 
-var collision = function () {
-  board.selectAll('.asteroid').each(function(asteroid) {
-    var radiusSum = (d3.select(this).attr('height') / 2) + (parseInt(player.attr('height') / 2));
-    var x = d3.select(this).attr('x') - player.attr('x');
-    var y = d3.select(this).attr('y') - player.attr('y');
-    var distance = Math.sqrt(Math.pow(x ,2) + Math.pow(y ,2));
+const collision = () => {
+  board.selectAll('.asteroid').each(function() {
+    // the this here is e.g. board.selectAll('.asteroid')[0][0] hence arrow function is a can't be
+    const allowedDistance = (d3.select(this).attr('height') / 2) + (parseInt(player.attr('height') / 2));
+    const x = d3.select(this).attr('x') - player.attr('x');
+    const y = d3.select(this).attr('y') - player.attr('y');
+    const currentDistance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 
-    if (radiusSum > distance) {
-      gameStats.collisions++
+    if (allowedDistance > currentDistance) {
+      gameStats.collisions++;
       gameStats.currentScore = 0;
     }
   });
 };
 
-var throttle = function(func, wait) {
-  var cooldown = (new Date()).getTime();
+const throttle = (func, wait) => {
+  let cooldown = (new Date()).getTime();
 
-  return function () {
+  return () => {
     if (cooldown < (new Date()).getTime()) {
-      func();
       cooldown = (new Date().getTime()) + wait;
+      func();
     }
   };
 };
 
-var timedCollision = throttle(collision, 350);
+const timedCollision = throttle(collision, 350);
 
-player.call(playerMovement);
+const timedScoreBoard = throttle(runScoreBoard, 1000);
+
+
 
 setInterval(change, 2000);
 
-d3.timer(function() {
-  runScoreBoard();
+d3.timer(() => {
+  timedScoreBoard();
   timedCollision();
 });
