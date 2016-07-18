@@ -37,7 +37,7 @@ const player = board.selectAll('image')
     y: d => d.y,
     height: d => d.height,
     width: d => d.width,
-    'xlink:href': 'player.png'
+    'xlink:href': 'pictures/player.png'
   });
 
 const playerMovement = d3.behavior.drag()
@@ -70,7 +70,7 @@ const asteroids = board.selectAll('image')
     width: 20,
     x: d => d.x,
     y: d => d.y,
-    'xlink:href': 'asteroid.png'
+    'xlink:href': 'pictures/asteroid.png'
   });
 
 
