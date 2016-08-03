@@ -1,6 +1,8 @@
 # Watchout
 A [D3.js][D3.js] implementation of [Atari Asteroids][atariAsteroids].
 
+![screenshot][screenshot]
+
 ## Instructions:
 - To see the source go to `client/` and open `watchout.js`
 - To play the game just open `client/index.html` with a [web browser][webbrowser]
@@ -20,3 +22,4 @@ A [D3.js][D3.js] implementation of [Atari Asteroids][atariAsteroids].
 [transition]: https://github.com/d3/d3-transition/blob/master/README.md#selection_transition
 [drag]: https://github.com/d3/d3-drag/blob/master/README.md#drag
 [timer]: https://github.com/d3/d3-timer/blob/master/README.md#timer
+[screenshot]: https://raw.githubusercontent.com/natoen/watchout/master/client/pictures/screenshot.png
